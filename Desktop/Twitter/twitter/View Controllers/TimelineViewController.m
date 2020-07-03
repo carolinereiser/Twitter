@@ -12,6 +12,8 @@
 #import "DateTools.h"
 #import "DetailsViewController.h"
 #import "LoginViewController.h"
+#import "ProfileViewController.h"
+#import "ResponsiveLabel.h"
 #import "TimelineViewController.h"
 #import "TweetCell.h"
 #import "UIImageView+AFNetworking.h"
@@ -19,9 +21,7 @@
 #import "Tweet.h"
 
 
-@interface TimelineViewController () <ComposeViewControllerDelegate, UITableViewDataSource, UITableViewDelegate>
-
-@property (strong, nonatomic) NSMutableArray<Tweet *>* tweetList;
+@interface TimelineViewController () <UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate>
  
 @end
 
@@ -49,6 +49,7 @@
             NSLog(@"😎😎😎 Successfully loaded home timeline");
             self.tweetList = tweets;
             [self.tableView reloadData];
+            self.isMoreDataLoading = false;
     } else{
             NSLog(@"😫😫😫 Error getting home timeline: %@", error.localizedDescription);
         }
@@ -69,7 +70,8 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     TweetCell* cell = [self.tableView dequeueReusableCellWithIdentifier:@"TweetCell" forIndexPath:indexPath];
-    
+    cell.profilePic.tag = indexPath.row;
+
     //get the tweet from the query
     cell.tweet = self.tweetList[indexPath.row];
     
@@ -87,6 +89,37 @@
 - (void)didTweet:(nonnull Tweet *)tweet {
     [self.tweetList insertObject:tweet atIndex:0];
     [self.tableView reloadData];
+}
+
+- (void)fetchMoreTweets
+{
+     [[APIManager shared] getMoreTweets:self.tweetList[[self.tweetList count]-1].idStr withCompletion:^(NSMutableArray *tweets, NSError *error) {
+        if (tweets) {
+            NSLog(@"😎😎😎 Successfully loaded more");
+            [self.tweetList addObjectsFromArray:tweets];
+            [self.tableView reloadData];
+            self.isMoreDataLoading = false;
+    } else{
+            NSLog(@"😫😫😫 Error getting more: %@", error.localizedDescription);
+        }
+    }];
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+     // Handle scroll behavior here
+    if(!self.isMoreDataLoading){
+       if(!self.isMoreDataLoading){
+           // Calculate the position of one screen length before the bottom of the results
+           int scrollViewContentHeight = self.tableView.contentSize.height;
+           int scrollOffsetThreshold = scrollViewContentHeight - self.tableView.bounds.size.height;
+           
+           // When the user has scrolled past the threshold, start requesting
+           if(scrollView.contentOffset.y > scrollOffsetThreshold && self.tableView.isDragging) {
+               self.isMoreDataLoading = true;
+               [self fetchMoreTweets];
+           }
+       }
+    }
 }
 
 #pragma mark - Navigation
@@ -108,6 +141,26 @@
         DetailsViewController *detailsViewController = [segue destinationViewController];
         detailsViewController.tweet = tweet;
     }
+    else if([[segue identifier] isEqualToString:@"replySegue"])
+    {
+        UITableViewCell *tappedCell = sender;
+        NSIndexPath *indexPath = [self.tableView indexPathForCell:tappedCell];
+        Tweet* tweet = self.tweetList[indexPath.row];
+        UINavigationController *navigationController = [segue destinationViewController];
+        ComposeViewController *composeController = (ComposeViewController*)navigationController.topViewController;
+        composeController.isReply = YES;
+        composeController.replyUserName = tweet.user.name;
+        composeController.replyId = tweet.idStr;
+    }
+    else if([[segue identifier] isEqualToString:@"profileSegue"])
+    {
+        UIButton *tappedButton = sender;
+        Tweet* tweet = self.tweetList[tappedButton.tag];
+        User* user = tweet.user;
+        ProfileViewController *profileViewController = [segue destinationViewController];
+        profileViewController.user = user;
+    }
+
 }
 
 @end

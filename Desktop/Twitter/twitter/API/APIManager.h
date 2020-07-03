@@ -20,5 +20,10 @@
 - (void)unfavorite:(Tweet *)tweet completion:(void (^)(Tweet *, NSError *))completion;
 - (void)retweet:(Tweet *)tweet completion:(void (^)(Tweet *, NSError *))completion;
 - (void)unretweet:(Tweet *)tweet completion:(void (^)(Tweet *, NSError *))completion;
+- (void)getMoreTweets:(NSString*)maxID withCompletion:(void(^)(NSMutableArray *tweets, NSError *error))completion;
+- (void)getCurrentUser:(void (^)(User *, NSError *))completion;
+- (void)getUserTimeline:(NSString*)userId completion:(void(^)(NSMutableArray *tweets, NSError *error))completion;
+- (void)postReplyWithText:(NSString *)text replyId:(NSString*)replyId completion:(void (^)(Tweet *, NSError *))completion;
+-(void)getMentionsTimeline:(void(^)(NSMutableArray *tweets, NSError *error))completion;
 
 @end

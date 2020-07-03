@@ -8,6 +8,7 @@
 
 #import "APIManager.h"
 #import "DateTools.h"
+#import "ResponsiveLabel.h"
 #import "TweetCell.h"
 #import "UIImageView+AFNetworking.h"
 
@@ -41,8 +42,14 @@
     
     //set profile pic
     NSURL *profPicURL = [NSURL URLWithString:tweet.user.profilePic];
-    self.profilePic.image = nil;
-    [self.profilePic setImageWithURL:profPicURL];
+    
+    UIImageView *imageView = [[UIImageView alloc] init];
+    [imageView setImageWithURL:profPicURL];
+    [self.profilePic setBackgroundImage:imageView.image forState:UIControlStateNormal];
+    
+    
+    //self.profilePic.image = nil;
+    //[self.profilePic setImageWithURL:profPicURL];
     
     self.userName.text = tweet.user.name;
     self.screenName.text = [NSString stringWithFormat:@"@%@", tweet.user.screenName];
@@ -52,7 +59,7 @@
     
     if(tweet.retweetCount)
     {
-        self.rtCount.text = [NSString stringWithFormat:@"%d", tweet.retweetCount];
+        self.rtCount.text = [self formatNumber:tweet.retweetCount];
     }
     else
     {
@@ -61,7 +68,7 @@
 
     if(tweet.favoriteCount)
     {
-        self.favCount.text = [NSString stringWithFormat:@"%d", tweet.favoriteCount];
+        self.favCount.text = [self formatNumber:tweet.favoriteCount];
     }
     else
     {
@@ -107,7 +114,7 @@
 - (void)refreshData{
     if(self.tweet.favoriteCount)
     {
-        self.favCount.text = [NSString stringWithFormat:@"%d", self.tweet.favoriteCount];
+        self.favCount.text = [self formatNumber:self.tweet.favoriteCount];
     }
     else
     {
@@ -116,15 +123,32 @@
     
     if(self.tweet.retweetCount)
     {
-        self.rtCount.text = [NSString stringWithFormat:@"%d", self.tweet.retweetCount];
+        self.rtCount.text = [self formatNumber:self.tweet.retweetCount];
     }
     else
     {
         self.rtCount.text = @"";
     }
-    
-    
-    //MARK: HOW DO YOU CHANGE THE PICTURE OF THE FAVORITE ICON?
+}
+
+- (NSString*) formatNumber:(int)num{
+    //if had more time, figure out simpler way to do this
+    if(num >= 10000 && num < 1000000)
+    {
+        int first = num / 1000;
+        int second = num % 1000 / 1000;
+        return [NSString stringWithFormat:@"%d.%dK", first, second];
+    }
+    else if(num >= 1000000 && num < 1000000000)
+    {
+        int first = num / 1000000;
+        int second = num % 1000000 / 1000000;
+        return [NSString stringWithFormat:@"%d.%dM", first, second];
+    }
+    else
+    {
+        return [NSString stringWithFormat:@"%d", num];
+    }
 }
 
 - (IBAction)didTapRetweet:(id)sender {

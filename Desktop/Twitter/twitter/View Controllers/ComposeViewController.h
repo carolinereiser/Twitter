@@ -16,6 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ComposeViewController : UIViewController
 @property (nonatomic, weak) id<ComposeViewControllerDelegate> delegate;
+@property (nonatomic) BOOL isReply;
+@property (nonatomic, strong) NSString* replyUserName;
+@property (nonatomic, strong) NSString* replyId;
+@property (weak, nonatomic) IBOutlet UIImageView *profilePic;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -6,15 +6,17 @@
 //  Copyright © 2020 Emerson Malca. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "ResponsiveLabel.h"
 #import "Tweet.h"
+#import <UIKit/UIKit.h>
+
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TweetCell : UITableViewCell
-@property (weak, nonatomic) IBOutlet UIImageView *profilePic;
+
 @property (weak, nonatomic) IBOutlet UILabel *date;
-@property (weak, nonatomic) IBOutlet UILabel *tweetText;
+@property (weak, nonatomic) IBOutlet UIButton *profilePic;
 @property (weak, nonatomic) IBOutlet UILabel *userName;
 @property (weak, nonatomic) IBOutlet UILabel *screenName;
 @property (weak, nonatomic) IBOutlet UILabel *rtCount;
@@ -23,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) IBOutlet UIButton *rtButton;
 @property (weak, nonatomic) IBOutlet UIButton *favButton;
 @property (weak, nonatomic) IBOutlet UIButton *dmButton;
+@property (weak, nonatomic) IBOutlet UILabel *tweetText;
 
 
 

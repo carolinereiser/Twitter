@@ -12,5 +12,7 @@
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
+@property (assign, nonatomic) BOOL isMoreDataLoading;
+@property (strong, nonatomic) NSMutableArray<Tweet *>* tweetList;
 
 @end
